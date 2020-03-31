@@ -42,7 +42,7 @@ O `OLED1 Xplained` deve ser conectado à entrada `EXT1` da placa `Atmel SAME70 X
     - [ ] Utiliza dois falantes (para fazer uma música mais complexa);
     - [x] Utiliza interrupção nos botões;
   - C
-    - [] Cria um arquivo .c .h com as funções de reprodução musical;
+    - [ ] Cria um arquivo .c .h com as funções de reprodução musical;
     - [x] Músicas organizadas em vetores de structs (ponteiros);
 
 - B+
