@@ -27,6 +27,8 @@ link para o vídeo de demonstração: [video](https://drive.google.com/file/d/1a
 ## Conexões
 Os componentes devem ser conectados de acordo com a imagem abaixo:
 
+[foto](#conexões_aps1.jpg)
+
 
 - O OLED1 Xplained deve ser conectado no EXT1 da placa Atmel SAME70 Xplained
 - O negativo do Buzzer deve ser conectado no PioA4 e o positivo no 3V3
