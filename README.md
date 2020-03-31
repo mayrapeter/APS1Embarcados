@@ -25,12 +25,14 @@ link para o vídeo de demonstração: [video](https://drive.google.com/file/d/1a
   - `Display` da placa `OLED1 Xplained` indica a música que está tocando.
 
 ## Conexões
-O `OLED1 Xplained` deve ser conectado à entrada `EXT1` da placa `Atmel SAME70 Xplained`, como na imagem a seguir:
-
-![OLED1 conectado à placa Atmel SAME70 Xplained](./placa-com-oled1.jpeg "OLED1 conectado à placa Atmel SAME70 Xplained")
+Os componentes devem ser conectados de acordo com a imagem abaixo:
 
 
-![OLED1 e Buzzer conectados à placa Atmel SAME70 Xplained](./placa-com-oled1-buzzer.jpeg "OLED1 e Buzzer conectados à placa Atmel SAME70 Xplained")
+- O OLED1 Xplained deve ser conectado no EXT1 da placa Atmel SAME70 Xplained
+- O negativo do Buzzer deve ser conectado no PioA4 e o positivo no 3V3
+- O cabo deve ser colocado na entrada USB do computador
+
+
 
 ## Arquivos do projeto
 
