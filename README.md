@@ -29,7 +29,6 @@ O `OLED1 Xplained` deve ser conectado à entrada `EXT1` da placa `Atmel SAME70 X
 
 ![OLED1 conectado à placa Atmel SAME70 Xplained](./placa-com-oled1.jpeg "OLED1 conectado à placa Atmel SAME70 Xplained")
 
-O `Buzzer` deve ser conectado aos pinos `VCC` e `PA6` do conector `EXT2` da placa `Atmel SAME70 Xplained`. Os polos do `Buzzer` são intercambíaveis, logo, o polo positivo não tem um pino específico ao qual precisa ser conectado.
 
 ![OLED1 e Buzzer conectados à placa Atmel SAME70 Xplained](./placa-com-oled1-buzzer.jpeg "OLED1 e Buzzer conectados à placa Atmel SAME70 Xplained")
 
