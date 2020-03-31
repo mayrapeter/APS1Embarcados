@@ -38,7 +38,12 @@ Os componentes devem ser conectados de acordo com a imagem abaixo:
 
 ## Arquivos do projeto
 
+- main.c: no main desenvolvemos a lógica principal do projeto, definimos os botões, os buzzers e o Led. Além disso foram definidas as funções que foram chamadas no main().
+- songs.h: Arquivo que organiza as músicas em structs e as coloca na funçao songsArray().
 
+*Funções*
+- play_song(Song song, int k): função que dada uma lista de músicas verifica se o botão 2 foi apertado, se isso for verdadeiro, a música é pausada, caso contrário a música é tocada.
+- main(): no main foi realizada a lógica para que seja possível mudar de música e mostrar o nome dela no display OLED. Além disso, a função play_song(Song song, int k) é chamada para que a música possa ser tocada ou pausada.
 
 ## Implementação segundo a [rúbrica](https://insper.github.io/ComputacaoEmbarcada/APS-1-Musical/)
 - A (1 item embarcado + 1 item C)
