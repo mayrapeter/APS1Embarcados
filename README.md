@@ -17,12 +17,12 @@ link para o vídeo de demonstração:
 2. Conectar a placa no computador
 3. Executar os códigos no Atmel Studio
 - Botões:
-  `Button 1` da placa `OLED1 Xplained` toca a música.
-  `Button 2` da placa `OLED1 Xplained` pausa a música.
-  `Button 3` da placa `OLED1 Xplained` escolhe a música.
+  -`Button 1` da placa `OLED1 Xplained` toca a música.
+  -`Button 2` da placa `OLED1 Xplained` pausa a música.
+  -`Button 3` da placa `OLED1 Xplained` escolhe a música.
 - LED's:
-  `LED` da placa `Atmel SAME70 Xplained` pisca junto com a música que está sendo tocada.
-  `Display` da placa `OLED1 Xplained` indica a música que está tocando.
+  -`LED` da placa `Atmel SAME70 Xplained` pisca junto com a música que está sendo tocada.
+  -`Display` da placa `OLED1 Xplained` indica a música que está tocando.
 
 ## Conexões
 O `OLED1 Xplained` deve ser conectado à entrada `EXT1` da placa `Atmel SAME70 Xplained`, como na imagem a seguir:
