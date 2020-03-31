@@ -1145,7 +1145,7 @@ Discarded input sections
  .debug_macro   0x00000000      0x3ca src/ASF/sam/drivers/mpu/mpu.o
  .debug_macro   0x00000000      0x1c8 src/ASF/sam/drivers/mpu/mpu.o
  .debug_line    0x00000000      0xa90 src/ASF/sam/drivers/mpu/mpu.o
- .debug_str     0x00000000    0x82bff src/ASF/sam/drivers/mpu/mpu.o
+ .debug_str     0x00000000    0x82c03 src/ASF/sam/drivers/mpu/mpu.o
  .comment       0x00000000       0x5a src/ASF/sam/drivers/mpu/mpu.o
  .debug_frame   0x00000000       0x84 src/ASF/sam/drivers/mpu/mpu.o
  .ARM.attributes
@@ -2525,7 +2525,7 @@ Discarded input sections
  .debug_macro   0x00000000      0x2bf src/ASF/sam/drivers/pmc/sleep.o
  .debug_macro   0x00000000      0x8d6 src/ASF/sam/drivers/pmc/sleep.o
  .debug_line    0x00000000      0xb47 src/ASF/sam/drivers/pmc/sleep.o
- .debug_str     0x00000000    0x8578b src/ASF/sam/drivers/pmc/sleep.o
+ .debug_str     0x00000000    0x8578f src/ASF/sam/drivers/pmc/sleep.o
  .comment       0x00000000       0x5a src/ASF/sam/drivers/pmc/sleep.o
  .debug_frame   0x00000000       0x5c src/ASF/sam/drivers/pmc/sleep.o
  .ARM.attributes
@@ -4551,27 +4551,27 @@ OUTPUT(SAME70.elf elf32-littlearm)
  .debug_line    0x00005b9d      0x40c src/ASF/sam/utils/syscalls/gcc/syscalls.o
  .debug_line    0x00005fa9      0xd5f src/main.o
 
-.debug_str      0x00000000    0x89c24
- .debug_str     0x00000000    0x857ab src/ASF/common/services/clock/same70/sysclk.o
-                              0x85e66 (size before relaxing)
- .debug_str     0x000857ab      0x1b5 src/ASF/common/services/delay/sam/cycle_counter.o
-                              0x81fe9 (size before relaxing)
- .debug_str     0x00085960       0x94 src/ASF/common/utils/interrupt/interrupt_sam_nvic.o
-                              0x81eb9 (size before relaxing)
- .debug_str     0x000859f4      0xad8 src/ASF/sam/drivers/pio/pio.o
-                              0x82a0f (size before relaxing)
- .debug_str     0x000864cc      0x59e src/ASF/sam/drivers/pio/pio_handler.o
-                              0x82b31 (size before relaxing)
- .debug_str     0x00086a6a      0x6c2 src/ASF/sam/drivers/pmc/pmc.o
-                              0x82b64 (size before relaxing)
- .debug_str     0x0008712c      0x6af src/ASF/sam/utils/cmsis/same70/source/templates/gcc/startup_same70.o
-                              0x82686 (size before relaxing)
- .debug_str     0x000877db      0x172 src/ASF/sam/utils/cmsis/same70/source/templates/system_same70.o
-                              0x72811 (size before relaxing)
- .debug_str     0x0008794d      0x779 src/ASF/sam/utils/syscalls/gcc/syscalls.o
-                               0x7460 (size before relaxing)
- .debug_str     0x000880c6     0x1b5e src/main.o
-                              0x87def (size before relaxing)
+.debug_str      0x00000000    0x89bde
+ .debug_str     0x00000000    0x857af src/ASF/common/services/clock/same70/sysclk.o
+                              0x85e6a (size before relaxing)
+ .debug_str     0x000857af      0x1b5 src/ASF/common/services/delay/sam/cycle_counter.o
+                              0x81fed (size before relaxing)
+ .debug_str     0x00085964       0x94 src/ASF/common/utils/interrupt/interrupt_sam_nvic.o
+                              0x81ebd (size before relaxing)
+ .debug_str     0x000859f8      0xad8 src/ASF/sam/drivers/pio/pio.o
+                              0x82a13 (size before relaxing)
+ .debug_str     0x000864d0      0x59e src/ASF/sam/drivers/pio/pio_handler.o
+                              0x82b35 (size before relaxing)
+ .debug_str     0x00086a6e      0x6c2 src/ASF/sam/drivers/pmc/pmc.o
+                              0x82b68 (size before relaxing)
+ .debug_str     0x00087130      0x6af src/ASF/sam/utils/cmsis/same70/source/templates/gcc/startup_same70.o
+                              0x8268a (size before relaxing)
+ .debug_str     0x000877df      0x172 src/ASF/sam/utils/cmsis/same70/source/templates/system_same70.o
+                              0x72815 (size before relaxing)
+ .debug_str     0x00087951      0x779 src/ASF/sam/utils/syscalls/gcc/syscalls.o
+                               0x7464 (size before relaxing)
+ .debug_str     0x000880ca     0x1b14 src/main.o
+                              0x87e0b (size before relaxing)
 
 .debug_frame    0x00000000     0x17d4
  .debug_frame   0x00000000       0x88 src/ASF/common/services/clock/same70/sysclk.o

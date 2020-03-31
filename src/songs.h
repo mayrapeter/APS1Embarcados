@@ -151,7 +151,7 @@ int marioDuration[] = {
 	83, 83, 83, 83
 };
 
-char marioName[] = "1 - Mario";
+char marioName[] = "1 - Mario  ";
 
 int mario2Notes[] = {
 	NOTE_C4, NOTE_C5, NOTE_A3, NOTE_A4,
@@ -197,7 +197,7 @@ int mario2Duration[] = {
 	333, 333, 333
 };
 
-char mario2Name[] = "3 - Underworld";
+char mario2Name[] = "3 - Underwo";
 
 int piratesNotes[] = {       
 	NOTE_E4, NOTE_G4, NOTE_A4, NOTE_A4, 0,

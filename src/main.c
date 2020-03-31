@@ -1,24 +1,12 @@
-/**
- * 5 semestre - Eng. da Computação - Insper
- * Rafael Corsi - rafael.corsi@insper.edu.br
- *
- * Projeto 0 para a placa SAME70-XPLD
- *
- * Objetivo :
- *  - Introduzir ASF e HAL
- *  - Configuracao de clock
- *  - Configuracao pino In/Out
- *
- * Material :
- *  - Kit: ATMEL SAME70-XPLD - ARM CORTEX M7
- */
-
 /************************************************************************/
 /* includes                                                             */
 /************************************************************************/
 
 #include "asf.h"
 #include "songs.h"
+#include "gfx_mono_ug_2832hsweg04.h"
+#include "gfx_mono_text.h"
+#include "sysfont.h"
 
 /************************************************************************/
 /* defines                                                              */
@@ -32,7 +20,7 @@
 /*  The internal debouncing filter is active. */
 #define _PIO_DEBOUNCE            (1u << 3)
 #define BUZZER_PIO           PIOA               // periferico que controla o BUZZER
-#define BUZZER_PIO_ID        ID_PIOA                 // ID do periférico PIOC (controla BUZZER)
+#define BUZZER_PIO_ID        ID_PIOA                 // ID do perif�rico PIOC (controla BUZZER)
 #define BUZZER_PIO_IDX       4                    // ID do BUZZER no PIO
 #define BUZZER_PIO_IDX_MASK  (1u << BUZZER_PIO_IDX)   // Mascara para CONTROLARMOS o BUZZER
 
@@ -46,22 +34,30 @@
 #define BUT2_PIO_IDX		31
 #define BUT2_PIO_IDX_MASK	(1u << BUT2_PIO_IDX)
 
+#define BUT3_PIO			PIOA
+#define BUT3_PIO_ID			ID_PIOA
+#define BUT3_PIO_IDX		19
+#define BUT3_PIO_IDX_MASK	(1u << BUT3_PIO_IDX)
+
 #define LED_PIO_ID		ID_PIOC
 #define LED_PIO			PIOC
 #define LED_PIN			8
 #define LED_IDX_MASK	(1 << LED_PIN)
 
-volatile int alreadyPlayed = 1;
+
+volatile short int but3_flag = 0;
+
 
 /************************************************************************/
 /* prototypes                                                           */
 /************************************************************************/
 
 void init(void);
+void but3_callback(void);
+void but3_callback(void){
+	but3_flag = 1;
+}
 
-/************************************************************************/
-/* interrupcoes                                                         */
-/************************************************************************/
 
 /************************************************************************/
 /* funcoes                                                              */
@@ -73,6 +69,7 @@ int play_song(Song song, int k){
 		if(pio_get(BUT2_PIO, PIO_INPUT, BUT2_PIO_IDX_MASK) == 0){
 			return k;
 		}
+
 		else{
 			if(flag_led){
 				pio_clear(LED_PIO, LED_IDX_MASK);
@@ -93,7 +90,7 @@ int play_song(Song song, int k){
 					pio_set(BUZZER_PIO, BUZZER_PIO_IDX_MASK);
 					delay_us(1000000/(2*song.notes[k]));
 					j++;
-				}	
+				}
 			}
 		}
 		k++;
@@ -102,56 +99,86 @@ int play_song(Song song, int k){
 	return -1;
 }
 
-// Função de inicialização do uC
+
 void init(void)
 {
+	pmc_enable_periph_clk(LED_PIO_ID);
+	pio_configure(LED_PIO, PIO_OUTPUT_0, LED_IDX_MASK, PIO_DEFAULT);
+	pmc_enable_periph_clk(BUZZER_PIO_ID);
+	pio_configure(BUZZER_PIO, PIO_OUTPUT_0, BUZZER_PIO_IDX_MASK, PIO_DEFAULT);
 	pmc_enable_periph_clk(BUT1_PIO_ID);
 	pmc_enable_periph_clk(BUT2_PIO_ID);
-	pmc_enable_periph_clk(BUZZER_PIO_ID);
-	pmc_enable_periph_clk(LED_PIO_ID);
-	pio_set_output(LED_PIO, LED_IDX_MASK, 0, 0, 0);
-	pio_set_output(BUZZER_PIO, BUZZER_PIO_IDX_MASK, 0, 0, 0);
-	pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, _PIO_PULLUP | _PIO_DEBOUNCE);
-	pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, _PIO_PULLUP | _PIO_DEBOUNCE);
-	pio_pull_up(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_PULLUP);
-	pio_pull_up(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_PULLUP);
+	pmc_enable_periph_clk(BUT3_PIO_ID);
+	pio_configure(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	pio_configure(BUT2_PIO, PIO_INPUT, BUT2_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	pio_configure(BUT3_PIO, PIO_INPUT, BUT3_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+	pio_set_debounce_filter(BUT1_PIO, BUT1_PIO_IDX_MASK, 100);
+	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 100);
+	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 100);
+	pio_handler_set(BUT3_PIO, BUT3_PIO_ID, BUT3_PIO_IDX_MASK, PIO_IT_RISE_EDGE, but3_callback);
+	pio_enable_interrupt(BUT1_PIO, BUT1_PIO_IDX_MASK);
+	pio_enable_interrupt(BUT2_PIO, BUT2_PIO_IDX_MASK);
+	pio_enable_interrupt(BUT3_PIO, BUT3_PIO_IDX_MASK);
+	NVIC_EnableIRQ(BUT1_PIO_ID);
+	NVIC_SetPriority(BUT1_PIO_ID, 4);
+	NVIC_EnableIRQ(BUT2_PIO_ID);
+	NVIC_SetPriority(BUT2_PIO_ID, 4);
+	NVIC_EnableIRQ(BUT3_PIO_ID);
+	NVIC_SetPriority(BUT3_PIO_ID, 4);
 
 }
 
 /************************************************************************/
 /* Main                                                                 */
 /************************************************************************/
-
 // Funcao principal chamada na inicalizacao do uC.
-int main(void){
+int main (void)
+{
+	board_init();
 	sysclk_init();
-	//gfx_mono_ssd1306_init();
+	gfx_mono_ssd1306_init();
+	
+
 	// Desativa WatchDog Timer
-	WDT->WDT_MR = WDT_MR_WDDIS;	
+	WDT->WDT_MR = WDT_MR_WDDIS;
 	delay_init();
 	init();
+	
 	Song songs[3];
+	int numSong = 3;
 	songsArray(songs);
 	int stopNote;
 	
-  // super loop
-  // aplicacoes embarcadas não devem sair do while(1).
-	  while (1)
-	  {
-		  //but1 == play, but2 == pause
-		  if(pio_get(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK) == 0){
-			  if(alreadyPlayed){
-				  stopNote = play_song(songs[1], 0);
-				  while (stopNote != -1){
-					  if(pio_get(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK) == 0){
-						  stopNote = play_song(songs[1], stopNote);
-					  }
-				  }
-				  alreadyPlayed = 0;
-				  
-			  }
-		  }
+
+	// Playing song variables
+	int now_playing = 0;
+	int play = 1;
+	int currentNote = 0;
+	
+	// Display
+	gfx_mono_draw_string(songs[now_playing].name, 10, 10, &sysfont);
+	
+	// Loop
+	while(1) {
+		
+		if (but3_flag) {
+			if (now_playing < numSong - 1) {
+				now_playing++;
+				} else {
+				now_playing = 0;
+			}
+			
+			gfx_mono_draw_string(songs[now_playing].name, 10, 10, &sysfont);
+			but3_flag = 0;
 		}
 		
-  return 0;
+		if (pio_get(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK) == 0) {
+				stopNote = play_song(songs[now_playing], 0);
+				while (stopNote != -1){
+					if(pio_get(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK) == 0){
+						stopNote = play_song(songs[now_playing], stopNote);
+					}
+				}
+		}
+	}
 }

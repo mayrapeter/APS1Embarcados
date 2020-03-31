@@ -33,9 +33,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
  14 .debug_line   00006d08  00000000  00000000  0004ec5f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_str    00089c24  00000000  00000000  00055967  2**0
+ 15 .debug_str    00089bde  00000000  00000000  00055967  2**0
                   CONTENTS, READONLY, DEBUGGING
- 16 .debug_frame  000017d4  00000000  00000000  000df58c  2**2
+ 16 .debug_frame  000017d4  00000000  00000000  000df548  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -221,113 +221,225 @@ static inline int pll_wait_for_lock(unsigned int pll_id)
   400218:	004005a5 	.word	0x004005a5
 
 0040021c <pio_pull_up>:
+ */
+void pio_pull_up(Pio *p_pio, const uint32_t ul_mask,
+		const uint32_t ul_pull_up_enable)
+{
+	/* Enable the pull-up(s) if necessary */
+	if (ul_pull_up_enable) {
   40021c:	b90a      	cbnz	r2, 400222 <pio_pull_up+0x6>
+		p_pio->PIO_PUER = ul_mask;
+	} else {
+		p_pio->PIO_PUDR = ul_mask;
   40021e:	6601      	str	r1, [r0, #96]	; 0x60
   400220:	4770      	bx	lr
+		p_pio->PIO_PUER = ul_mask;
   400222:	6641      	str	r1, [r0, #100]	; 0x64
   400224:	4770      	bx	lr
 
 00400226 <pio_set>:
+ * \param p_pio Pointer to a PIO instance.
+ * \param ul_mask Bitmask of one or more pin(s) to configure.
+ */
+void pio_set(Pio *p_pio, const uint32_t ul_mask)
+{
+	p_pio->PIO_SODR = ul_mask;
   400226:	6301      	str	r1, [r0, #48]	; 0x30
   400228:	4770      	bx	lr
 
 0040022a <pio_clear>:
+ * \param p_pio Pointer to a PIO instance.
+ * \param ul_mask Bitmask of one or more pin(s) to configure.
+ */
+void pio_clear(Pio *p_pio, const uint32_t ul_mask)
+{
+	p_pio->PIO_CODR = ul_mask;
   40022a:	6341      	str	r1, [r0, #52]	; 0x34
   40022c:	4770      	bx	lr
 
 0040022e <pio_get>:
+uint32_t pio_get(Pio *p_pio, const pio_type_t ul_type,
+		const uint32_t ul_mask)
+{
+	uint32_t ul_reg;
+
+	if ((ul_type == PIO_OUTPUT_0) || (ul_type == PIO_OUTPUT_1)) {
   40022e:	f021 6100 	bic.w	r1, r1, #134217728	; 0x8000000
   400232:	f1b1 5f40 	cmp.w	r1, #805306368	; 0x30000000
   400236:	d105      	bne.n	400244 <pio_get+0x16>
+		ul_reg = p_pio->PIO_ODSR;
   400238:	6b83      	ldr	r3, [r0, #56]	; 0x38
+	} else {
+		ul_reg = p_pio->PIO_PDSR;
+	}
+
+	if ((ul_reg & ul_mask) == 0) {
   40023a:	4213      	tst	r3, r2
+		return 0;
+	} else {
+		return 1;
+	}
+}
   40023c:	bf14      	ite	ne
   40023e:	2001      	movne	r0, #1
   400240:	2000      	moveq	r0, #0
   400242:	4770      	bx	lr
+		ul_reg = p_pio->PIO_PDSR;
   400244:	6bc3      	ldr	r3, [r0, #60]	; 0x3c
   400246:	e7f8      	b.n	40023a <pio_get+0xc>
 
 00400248 <pio_set_input>:
+ * \param p_pio Pointer to a PIO instance.
+ * \param ul_mask Interrupt sources bit map.
+ */
+void pio_disable_interrupt(Pio *p_pio, const uint32_t ul_mask)
+{
+	p_pio->PIO_IDR = ul_mask;
   400248:	6441      	str	r1, [r0, #68]	; 0x44
+	if (ul_pull_up_enable) {
   40024a:	f012 0f01 	tst.w	r2, #1
   40024e:	d10d      	bne.n	40026c <pio_set_input+0x24>
+		p_pio->PIO_PUDR = ul_mask;
   400250:	6601      	str	r1, [r0, #96]	; 0x60
+	if (ul_attribute & (PIO_DEGLITCH | PIO_DEBOUNCE)) {
   400252:	f012 0f0a 	tst.w	r2, #10
   400256:	d00b      	beq.n	400270 <pio_set_input+0x28>
+		p_pio->PIO_IFER = ul_mask;
   400258:	6201      	str	r1, [r0, #32]
+	if (ul_attribute & PIO_DEGLITCH) {
   40025a:	f012 0f02 	tst.w	r2, #2
   40025e:	d109      	bne.n	400274 <pio_set_input+0x2c>
+		if (ul_attribute & PIO_DEBOUNCE) {
   400260:	f012 0f08 	tst.w	r2, #8
   400264:	d008      	beq.n	400278 <pio_set_input+0x30>
+			p_pio->PIO_IFSCER = ul_mask;
   400266:	f8c0 1084 	str.w	r1, [r0, #132]	; 0x84
   40026a:	e005      	b.n	400278 <pio_set_input+0x30>
+		p_pio->PIO_PUER = ul_mask;
   40026c:	6641      	str	r1, [r0, #100]	; 0x64
   40026e:	e7f0      	b.n	400252 <pio_set_input+0xa>
+		p_pio->PIO_IFDR = ul_mask;
   400270:	6241      	str	r1, [r0, #36]	; 0x24
   400272:	e7f2      	b.n	40025a <pio_set_input+0x12>
+		p_pio->PIO_IFSCDR = ul_mask;
   400274:	f8c0 1080 	str.w	r1, [r0, #128]	; 0x80
+	p_pio->PIO_ODR = ul_mask;
   400278:	6141      	str	r1, [r0, #20]
+	p_pio->PIO_PER = ul_mask;
   40027a:	6001      	str	r1, [r0, #0]
   40027c:	4770      	bx	lr
 
 0040027e <pio_set_output>:
+{
   40027e:	b410      	push	{r4}
   400280:	9c01      	ldr	r4, [sp, #4]
+	p_pio->PIO_IDR = ul_mask;
   400282:	6441      	str	r1, [r0, #68]	; 0x44
+	if (ul_pull_up_enable) {
   400284:	b94c      	cbnz	r4, 40029a <pio_set_output+0x1c>
+		p_pio->PIO_PUDR = ul_mask;
   400286:	6601      	str	r1, [r0, #96]	; 0x60
+	if (ul_multidrive_enable) {
   400288:	b14b      	cbz	r3, 40029e <pio_set_output+0x20>
+		p_pio->PIO_MDER = ul_mask;
   40028a:	6501      	str	r1, [r0, #80]	; 0x50
+	if (ul_default_level) {
   40028c:	b94a      	cbnz	r2, 4002a2 <pio_set_output+0x24>
+		p_pio->PIO_CODR = ul_mask;
   40028e:	6341      	str	r1, [r0, #52]	; 0x34
+	p_pio->PIO_OER = ul_mask;
   400290:	6101      	str	r1, [r0, #16]
+	p_pio->PIO_PER = ul_mask;
   400292:	6001      	str	r1, [r0, #0]
+}
   400294:	f85d 4b04 	ldr.w	r4, [sp], #4
   400298:	4770      	bx	lr
+		p_pio->PIO_PUER = ul_mask;
   40029a:	6641      	str	r1, [r0, #100]	; 0x64
   40029c:	e7f4      	b.n	400288 <pio_set_output+0xa>
+		p_pio->PIO_MDDR = ul_mask;
   40029e:	6541      	str	r1, [r0, #84]	; 0x54
   4002a0:	e7f4      	b.n	40028c <pio_set_output+0xe>
+		p_pio->PIO_SODR = ul_mask;
   4002a2:	6301      	str	r1, [r0, #48]	; 0x30
   4002a4:	e7f4      	b.n	400290 <pio_set_output+0x12>
 
 004002a6 <pio_get_interrupt_status>:
+ *
+ * \return The interrupt status value.
+ */
+uint32_t pio_get_interrupt_status(const Pio *p_pio)
+{
+	return p_pio->PIO_ISR;
   4002a6:	6cc0      	ldr	r0, [r0, #76]	; 0x4c
+}
   4002a8:	4770      	bx	lr
 
 004002aa <pio_get_interrupt_mask>:
+ *
+ * \return The interrupt mask value.
+ */
+uint32_t pio_get_interrupt_mask(const Pio *p_pio)
+{
+	return p_pio->PIO_IMR;
   4002aa:	6c80      	ldr	r0, [r0, #72]	; 0x48
+}
   4002ac:	4770      	bx	lr
 	...
 
 004002b0 <pio_handler_process>:
+ *
+ * \param p_pio PIO controller base address.
+ * \param ul_id PIO controller ID.
+ */
+void pio_handler_process(Pio *p_pio, uint32_t ul_id)
+{
   4002b0:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
   4002b4:	4604      	mov	r4, r0
   4002b6:	4688      	mov	r8, r1
+	uint32_t status;
+	uint32_t i;
+
+	/* Read PIO controller status */
+	status = pio_get_interrupt_status(p_pio);
   4002b8:	4b0e      	ldr	r3, [pc, #56]	; (4002f4 <pio_handler_process+0x44>)
   4002ba:	4798      	blx	r3
   4002bc:	4605      	mov	r5, r0
+	status &= pio_get_interrupt_mask(p_pio);
   4002be:	4620      	mov	r0, r4
   4002c0:	4b0d      	ldr	r3, [pc, #52]	; (4002f8 <pio_handler_process+0x48>)
   4002c2:	4798      	blx	r3
+
+	/* Check pending events */
+	if (status != 0) {
   4002c4:	4005      	ands	r5, r0
   4002c6:	d013      	beq.n	4002f0 <pio_handler_process+0x40>
   4002c8:	4c0c      	ldr	r4, [pc, #48]	; (4002fc <pio_handler_process+0x4c>)
   4002ca:	f104 0660 	add.w	r6, r4, #96	; 0x60
   4002ce:	e003      	b.n	4002d8 <pio_handler_process+0x28>
+							gs_interrupt_sources[i].mask);
+					status &= ~(gs_interrupt_sources[i].mask);
+				}
+			}
+			i++;
+			if (i >= MAX_INTERRUPT_SOURCES) {
   4002d0:	42b4      	cmp	r4, r6
   4002d2:	d00d      	beq.n	4002f0 <pio_handler_process+0x40>
   4002d4:	3410      	adds	r4, #16
+		while (status != 0) {
   4002d6:	b15d      	cbz	r5, 4002f0 <pio_handler_process+0x40>
+			if (gs_interrupt_sources[i].id == ul_id) {
   4002d8:	6820      	ldr	r0, [r4, #0]
   4002da:	4540      	cmp	r0, r8
   4002dc:	d1f8      	bne.n	4002d0 <pio_handler_process+0x20>
+				if ((status & gs_interrupt_sources[i].mask) != 0) {
   4002de:	6861      	ldr	r1, [r4, #4]
   4002e0:	4229      	tst	r1, r5
   4002e2:	d0f5      	beq.n	4002d0 <pio_handler_process+0x20>
+					gs_interrupt_sources[i].handler(gs_interrupt_sources[i].id,
   4002e4:	68e3      	ldr	r3, [r4, #12]
   4002e6:	4798      	blx	r3
+					status &= ~(gs_interrupt_sources[i].mask);
   4002e8:	6863      	ldr	r3, [r4, #4]
   4002ea:	ea25 0503 	bic.w	r5, r5, r3
   4002ee:	e7ef      	b.n	4002d0 <pio_handler_process+0x20>
@@ -337,7 +449,14 @@ static inline int pll_wait_for_lock(unsigned int pll_id)
   4002fc:	2040148c 	.word	0x2040148c
 
 00400300 <PIOA_Handler>:
+/**
+ * \brief Parallel IO Controller A interrupt handler.
+ * Redefined PIOA interrupt handler for NVIC interrupt table.
+ */
+void PIOA_Handler(void)
+{
   400300:	b508      	push	{r3, lr}
+	pio_handler_process(PIOA, ID_PIOA);
   400302:	210a      	movs	r1, #10
   400304:	4801      	ldr	r0, [pc, #4]	; (40030c <PIOA_Handler+0xc>)
   400306:	4b02      	ldr	r3, [pc, #8]	; (400310 <PIOA_Handler+0x10>)
@@ -347,7 +466,14 @@ static inline int pll_wait_for_lock(unsigned int pll_id)
   400310:	004002b1 	.word	0x004002b1
 
 00400314 <PIOB_Handler>:
+/**
+ * \brief Parallel IO Controller B interrupt handler
+ * Redefined PIOB interrupt handler for NVIC interrupt table.
+ */
+void PIOB_Handler(void)
+{
   400314:	b508      	push	{r3, lr}
+    pio_handler_process(PIOB, ID_PIOB);
   400316:	210b      	movs	r1, #11
   400318:	4801      	ldr	r0, [pc, #4]	; (400320 <PIOB_Handler+0xc>)
   40031a:	4b02      	ldr	r3, [pc, #8]	; (400324 <PIOB_Handler+0x10>)
@@ -357,7 +483,14 @@ static inline int pll_wait_for_lock(unsigned int pll_id)
   400324:	004002b1 	.word	0x004002b1
 
 00400328 <PIOC_Handler>:
+/**
+ * \brief Parallel IO Controller C interrupt handler.
+ * Redefined PIOC interrupt handler for NVIC interrupt table.
+ */
+void PIOC_Handler(void)
+{
   400328:	b508      	push	{r3, lr}
+	pio_handler_process(PIOC, ID_PIOC);
   40032a:	210c      	movs	r1, #12
   40032c:	4801      	ldr	r0, [pc, #4]	; (400334 <PIOC_Handler+0xc>)
   40032e:	4b02      	ldr	r3, [pc, #8]	; (400338 <PIOC_Handler+0x10>)
@@ -367,7 +500,14 @@ static inline int pll_wait_for_lock(unsigned int pll_id)
   400338:	004002b1 	.word	0x004002b1
 
 0040033c <PIOD_Handler>:
+/**
+ * \brief Parallel IO Controller D interrupt handler.
+ * Redefined PIOD interrupt handler for NVIC interrupt table.
+ */
+void PIOD_Handler(void)
+{
   40033c:	b508      	push	{r3, lr}
+	pio_handler_process(PIOD, ID_PIOD);
   40033e:	2110      	movs	r1, #16
   400340:	4801      	ldr	r0, [pc, #4]	; (400348 <PIOD_Handler+0xc>)
   400342:	4b02      	ldr	r3, [pc, #8]	; (40034c <PIOD_Handler+0x10>)
@@ -377,7 +517,14 @@ static inline int pll_wait_for_lock(unsigned int pll_id)
   40034c:	004002b1 	.word	0x004002b1
 
 00400350 <PIOE_Handler>:
+/**
+ * \brief Parallel IO Controller E interrupt handler.
+ * Redefined PIOE interrupt handler for NVIC interrupt table.
+ */
+void PIOE_Handler(void)
+{
   400350:	b508      	push	{r3, lr}
+	pio_handler_process(PIOE, ID_PIOE);
   400352:	2111      	movs	r1, #17
   400354:	4801      	ldr	r0, [pc, #4]	; (40035c <PIOE_Handler+0xc>)
   400356:	4b02      	ldr	r3, [pc, #8]	; (400360 <PIOE_Handler+0x10>)
@@ -8725,6 +8872,12 @@ int main(void){
 Disassembly of section .relocate:
 
 20400000 <portable_delay_cycles>:
+RAMFUNC
+void portable_delay_cycles(unsigned long n)
+{
+	UNUSED(n);
+
+	__asm (
 20400000:	f3bf 8f5f 	dmb	sy
 20400004:	3801      	subs	r0, #1
 20400006:	d1fb      	bne.n	20400000 <portable_delay_cycles>
