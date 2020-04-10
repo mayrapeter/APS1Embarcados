@@ -63,7 +63,7 @@ Os componentes devem ser conectados de acordo com a imagem abaixo:
   - [x] Utiliza struct para organizar as músicas;
   - [x] Código organizado em funções e que recebem struct contendo música;
   - [x] Utiliza #define sempre que necessário;
-  - [ ] Fecha todos os issues que forem abertos no repositório (pelo professor);
+  - [x] Fecha todos os issues que forem abertos no repositório (pelo professor);
 
 - C
   - [x] Repositório contém [README.md](/README.md) com ligações elétrica e passos de como usar o projeto, assim como link para o vídeo;
