@@ -97,7 +97,7 @@ typedef struct  {
 #define NOTE_D8  4699
 #define NOTE_DS8 4978
 
-int marioNotes[] = {
+const int marioNotes[] = {
 	NOTE_E7, NOTE_E7, 0, NOTE_E7,
 	0, NOTE_C7, NOTE_E7, 0,
 	NOTE_G7, 0, 0,  0,
@@ -124,7 +124,7 @@ int marioNotes[] = {
 	NOTE_D7, NOTE_B6, 0, 0
 };
 
-int marioDuration[] = {
+const int marioDuration[] = {
 	83, 83, 83, 83,
 	83, 83, 83, 83,
 	83, 83, 83, 83,
@@ -153,7 +153,7 @@ int marioDuration[] = {
 
 char marioName[] = "1 - Mario  ";
 
-int mario2Notes[] = {
+const int mario2Notes[] = {
 	NOTE_C4, NOTE_C5, NOTE_A3, NOTE_A4,
 	NOTE_AS3, NOTE_AS4, 0,
 	0,
@@ -175,7 +175,7 @@ int mario2Notes[] = {
 	0, 0, 0
 };
 
-int mario2Duration[] = {
+const int mario2Duration[] = {
 	83, 83, 83, 83,
 	83, 83, 166,
 	333,
@@ -199,7 +199,7 @@ int mario2Duration[] = {
 
 char mario2Name[] = "3 - Underwo";
 
-int piratesNotes[] = {       
+const int piratesNotes[] = {       
 	NOTE_E4, NOTE_G4, NOTE_A4, NOTE_A4, 0,
 	NOTE_A4, NOTE_B4, NOTE_C5, NOTE_C5, 0,
 	NOTE_C5, NOTE_D5, NOTE_B4, NOTE_B4, 0,
@@ -252,7 +252,7 @@ int piratesNotes[] = {
 	NOTE_B4, NOTE_C5, 0, NOTE_B4, 0, NOTE_A4
 };
 
-int piratesDuration[] = { 
+const int piratesDuration[] = { 
 	125, 125, 250, 125, 125,
 	125, 125, 250, 125, 125,
 	125, 125, 250, 125, 125,

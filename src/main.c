@@ -39,10 +39,19 @@
 #define BUT3_PIO_IDX		19
 #define BUT3_PIO_IDX_MASK	(1u << BUT3_PIO_IDX)
 
-#define LED_PIO_ID		ID_PIOC
-#define LED_PIO			PIOC
-#define LED_PIN			8
-#define LED_IDX_MASK	(1 << LED_PIN)
+#define LED_PIO_ID			ID_PIOC
+#define LED_PIO				PIOC
+#define LED_PIN				8
+#define LED_IDX_MASK		(1 << LED_PIN)
+
+#define BUT1_PRIORITY		4
+#define BUT2_PRIORITY		4
+#define BUT3_PRIORITY		4
+
+#define BUT1_DEBOUNCE		100
+#define BUT2_DEBOUNCE		100
+#define BUT3_DEBOUNCE		100
+
 
 
 volatile short int but3_flag = 0;
@@ -99,6 +108,10 @@ int play_song(Song song, int k){
 	return -1;
 }
 
+void draw_music_title(char* title) {
+	gfx_mono_draw_string(title, 10,5, &sysfont);
+}
+
 
 void init(void)
 {
@@ -112,19 +125,19 @@ void init(void)
 	pio_configure(BUT1_PIO, PIO_INPUT, BUT1_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
 	pio_configure(BUT2_PIO, PIO_INPUT, BUT2_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
 	pio_configure(BUT3_PIO, PIO_INPUT, BUT3_PIO_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
-	pio_set_debounce_filter(BUT1_PIO, BUT1_PIO_IDX_MASK, 100);
-	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 100);
-	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, 100);
+	pio_set_debounce_filter(BUT1_PIO, BUT1_PIO_IDX_MASK, BUT1_DEBOUNCE);
+	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, BUT2_DEBOUNCE);
+	pio_set_debounce_filter(BUT2_PIO, BUT2_PIO_IDX_MASK, BUT2_DEBOUNCE);
 	pio_handler_set(BUT3_PIO, BUT3_PIO_ID, BUT3_PIO_IDX_MASK, PIO_IT_RISE_EDGE, but3_callback);
 	pio_enable_interrupt(BUT1_PIO, BUT1_PIO_IDX_MASK);
 	pio_enable_interrupt(BUT2_PIO, BUT2_PIO_IDX_MASK);
 	pio_enable_interrupt(BUT3_PIO, BUT3_PIO_IDX_MASK);
 	NVIC_EnableIRQ(BUT1_PIO_ID);
-	NVIC_SetPriority(BUT1_PIO_ID, 4);
+	NVIC_SetPriority(BUT1_PIO_ID, BUT1_PRIORITY);
 	NVIC_EnableIRQ(BUT2_PIO_ID);
-	NVIC_SetPriority(BUT2_PIO_ID, 4);
+	NVIC_SetPriority(BUT2_PIO_ID, BUT2_PRIORITY);
 	NVIC_EnableIRQ(BUT3_PIO_ID);
-	NVIC_SetPriority(BUT3_PIO_ID, 4);
+	NVIC_SetPriority(BUT3_PIO_ID, BUT3_PRIORITY);
 
 }
 
@@ -156,8 +169,7 @@ int main (void)
 	int currentNote = 0;
 	
 	// Display
-	gfx_mono_draw_string(songs[now_playing].name, 10, 10, &sysfont);
-	
+	draw_music_title(songs[now_playing].name);	
 	// Loop
 	while(1) {
 		
@@ -167,8 +179,7 @@ int main (void)
 				} else {
 				now_playing = 0;
 			}
-			
-			gfx_mono_draw_string(songs[now_playing].name, 10, 10, &sysfont);
+			draw_music_title(songs[now_playing].name);
 			but3_flag = 0;
 		}
 		
